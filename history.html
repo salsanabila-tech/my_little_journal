@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Journal Entries</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Sacramento&family=Inter:wght@300;400;500&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body
+        class="font-[Inter] bg-rose-50 min-h-screen px-4 py-10 opacity-0 translate-y-3 transition-all duration-500"
+    >
+        <div class="max-w-3xl mx-auto">
+            <div class="flex justify-between mb-8">
+                <a href="index.html" class="text-rose-400">← back</a>
+                <h1
+                    class="text-3xl sm:text-4xl font-[Sacramento] text-rose-600"
+                >
+                    📔 Journal Entries
+                </h1>
+                <span></span>
+            </div>
+            <div id="list" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+        </div>
+
+        <div
+            id="m"
+            class="fixed inset-0 bg-black/40 hidden items-center justify-center px-4"
+        >
+            <div class="bg-white rounded-2xl p-6 max-w-lg w-full">
+                <div class="flex justify-between mb-3">
+                    <p id="md" class="text-rose-400 text-sm"></p>
+                    <button
+                        onclick="m.classList.add('hidden')"
+                        class="text-rose-400"
+                    >
+                        close
+                    </button>
+                </div>
+                <p id="mt" class="whitespace-pre-line text-slate-600"></p>
+            </div>
+        </div>
+
+        <script>
+            const j = JSON.parse(localStorage.getItem("journals")) || [],
+                list = document.getElementById("list");
+            function r() {
+                list.innerHTML = j.length
+                    ? ""
+                    : `<p class="text-center text-rose-400 col-span-full">no entries 🌸</p>`;
+                j.forEach(
+                    (e, i) =>
+                        (list.innerHTML += `<div onclick="o(${i})" class="bg-white p-5 rounded-2xl shadow-sm cursor-pointer">
+     <p class="text-xs text-rose-400">${e.date} • ${e.mood}</p>
+     <p class="text-slate-600 line-clamp-3">${e.text}</p>
+   </div>`)
+                );
+            }
+            function o(i) {
+                md.textContent = j[i].date + " • " + j[i].mood;
+                mt.textContent = j[i].text;
+                m.classList.remove("hidden");
+            }
+            r();
+            window.addEventListener("load", () =>
+                document.body.classList.remove("opacity-0", "translate-y-3")
+            );
+        </script>
+
+        <audio
+            id="clickSound"
+            src="assets/sound/pop.mp3"
+            preload="auto"
+        ></audio>
+
+        <script>
+            const clickSound = document.getElementById("clickSound");
+
+            document.querySelectorAll("a").forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    const href = link.getAttribute("href");
+                    if (!href) return;
+
+                    e.preventDefault();
+
+                    // play sound
+                    clickSound.currentTime = 0;
+                    clickSound.play();
+
+                    // delay pindah halaman
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 250); // 0.25 detik
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>My Gallery</title>
+
+        <!-- Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Sacramento&family=Inter:wght@300;400;500&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Tailwind -->
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+
+    <body
+        class="font-[Inter] bg-rose-50 min-h-screen px-4 py-10 opacity-0 translate-y-3 transition-all duration-500"
+    >
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-8">
+                <a href="index.html" class="text-rose-400 hover:underline"
+                    >← back</a
+                >
+                <h1
+                    class="text-3xl sm:text-4xl font-[Sacramento] text-rose-600 flex items-center gap-2"
+                >
+                    🖼️ My Gallery
+                </h1>
+                <span></span>
+            </div>
+
+            <!-- Add Memory -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-10 space-y-4">
+                <p class="text-sm text-rose-500">Add a little memory ✨</p>
+
+                <input
+                    type="file"
+                    accept="image/*"
+                    id="imageInput"
+                    class="text-sm"
+                />
+
+                <!-- Preview -->
+                <div id="previewBox" class="hidden space-y-4">
+                    <img
+                        id="previewImg"
+                        class="w-48 h-48 object-cover mx-auto rounded"
+                    />
+
+                    <input
+                        type="text"
+                        id="captionInput"
+                        placeholder="write a soft description…"
+                        class="w-full rounded-xl border border-rose-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
+                    />
+
+                    <button
+                        onclick="saveMemory()"
+                        class="w-full bg-rose-300 hover:bg-rose-400 text-white text-sm py-2.5 rounded-full transition"
+                    >
+                        Save Memory 💗
+                    </button>
+                </div>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div
+                id="galleryGrid"
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6"
+            ></div>
+        </div>
+
+        <!-- Modal -->
+        <div
+            id="modal"
+            class="fixed inset-0 bg-black/50 hidden items-center justify-center px-4"
+        >
+            <div class="bg-white rounded-2xl p-5 max-w-lg w-full relative">
+                <button
+                    onclick="closeModal()"
+                    class="absolute top-3 right-3 text-rose-400 text-sm hover:underline"
+                >
+                    ✕ close
+                </button>
+
+                <img id="modalImg" class="rounded-xl w-full mb-4" />
+                <p
+                    id="modalCaption"
+                    class="text-sm text-slate-600 text-center mb-5"
+                ></p>
+
+                <button
+                    onclick="deleteImage()"
+                    class="w-full text-sm text-red-400 hover:text-red-500 transition"
+                >
+                    🗑️ delete this memory
+                </button>
+            </div>
+        </div>
+
+        <script>
+            // page animation
+            window.addEventListener("load", () => {
+                document.body.classList.remove("opacity-0", "translate-y-3");
+            });
+
+            const imageInput = document.getElementById("imageInput");
+            const previewBox = document.getElementById("previewBox");
+            const previewImg = document.getElementById("previewImg");
+            const captionInput = document.getElementById("captionInput");
+
+            const grid = document.getElementById("galleryGrid");
+            const modal = document.getElementById("modal");
+            const modalImg = document.getElementById("modalImg");
+            const modalCaption = document.getElementById("modalCaption");
+
+            let gallery = JSON.parse(localStorage.getItem("gallery")) || [];
+            let tempImage = null;
+            let currentIndex = null;
+
+            imageInput.addEventListener("change", () => {
+                const file = imageInput.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    tempImage = reader.result;
+                    previewImg.src = tempImage;
+                    previewBox.classList.remove("hidden");
+                };
+                reader.readAsDataURL(file);
+            });
+
+            function saveMemory() {
+                if (!tempImage) return;
+
+                gallery.unshift({
+                    image: tempImage,
+                    caption: captionInput.value,
+                });
+
+                localStorage.setItem("gallery", JSON.stringify(gallery));
+
+                tempImage = null;
+                imageInput.value = "";
+                captionInput.value = "";
+                previewBox.classList.add("hidden");
+
+                render();
+            }
+
+            function render() {
+                grid.innerHTML = "";
+
+                if (gallery.length === 0) {
+                    grid.innerHTML = `
+          <p class="text-sm text-rose-400 col-span-full text-center">
+            no memories yet 🌸
+          </p>
+        `;
+                    return;
+                }
+
+                gallery.forEach((item, index) => {
+                    grid.innerHTML += `
+          <div
+            class="bg-white p-3 pb-6 rounded shadow
+                   hover:-translate-y-1 transition"
+          >
+            <img
+              src="${item.image}"
+              onclick="openModal(${index})"
+              class="w-full aspect-square object-cover rounded cursor-pointer"
+            />
+
+            <p class="text-xs text-slate-600 mt-3 text-center">
+              ${item.caption || ""}
+            </p>
+
+            <!-- Edit Icon -->
+            <div class="flex justify-center mt-2">
+              <button
+                onclick="editCaption(${index})"
+                class="text-rose-400 text-xs hover:text-rose-500 transition"
+                title="edit caption"
+              >
+                ✏️
+              </button>
+            </div>
+          </div>
+        `;
+                });
+            }
+
+            function openModal(index) {
+                currentIndex = index;
+                modalImg.src = gallery[index].image;
+                modalCaption.textContent = gallery[index].caption;
+                modal.classList.remove("hidden");
+                modal.classList.add("flex");
+            }
+
+            function closeModal() {
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+                currentIndex = null;
+            }
+
+            function deleteImage() {
+                if (currentIndex === null) return;
+
+                gallery.splice(currentIndex, 1);
+                localStorage.setItem("gallery", JSON.stringify(gallery));
+                closeModal();
+                render();
+            }
+
+            function editCaption(index) {
+                const newCaption = prompt(
+                    "edit your memory ✏️",
+                    gallery[index].caption
+                );
+                if (newCaption === null) return;
+
+                gallery[index].caption = newCaption;
+                localStorage.setItem("gallery", JSON.stringify(gallery));
+                render();
+            }
+
+            render();
+        </script>
+
+        <audio
+            id="clickSound"
+            src="assets/sound/pop.mp3"
+            preload="auto"
+        ></audio>
+
+        <script>
+            const clickSound = document.getElementById("clickSound");
+
+            document.querySelectorAll("a").forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    const href = link.getAttribute("href");
+                    if (!href) return;
+
+                    e.preventDefault();
+
+                    // play sound
+                    clickSound.currentTime = 0;
+                    clickSound.play();
+
+                    // delay pindah halaman
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 250); // 0.25 detik
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>My Little Journal</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Sacramento&family=Inter:wght@300;400;500&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            @keyframes float {
+                0% {
+                    transform: translateY(0) rotate(0deg);
+                }
+                50% {
+                    transform: translateY(-20px) rotate(2deg);
+                }
+                100% {
+                    transform: translateY(0) rotate(0deg);
+                }
+            }
+
+            .float-slow {
+                animation: float 14s ease-in-out infinite;
+            }
+
+            .float-medium {
+                animation: float 10s ease-in-out infinite;
+            }
+
+            .float-fast {
+                animation: float 7s ease-in-out infinite;
+            }
+        </style>
+    </head>
+    <body
+        class="font-[Inter] bg-white min-h-screen px-4 py-10 opacity-0 translate-y-3 transition-all duration-500"
+    >
+        <!-- Floating icons background -->
+        <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+            <img
+                src="assets/floral.png"
+                class="absolute top-10 left-10 w-28 opacity-60 float-slow"
+            />
+
+            <img
+                src="assets/star.png"
+                class="absolute top-1/3 right-20 w-20 opacity-50 float-medium"
+            />
+
+            <img
+                src="assets/ribbon.png"
+                class="absolute bottom-20 left-1/4 w-24 opacity-55 float-fast"
+            />
+
+            <img
+                src="assets/cat.png"
+                class="absolute bottom-10 right-10 w-20 opacity-50 float-slow"
+            />
+
+            <img
+                src="assets/butterfly.png"
+                class="absolute top-1/2 left-1/2 w-32 opacity-45 float-medium"
+            />
+        </div>
+
+        <div class="max-w-3xl mx-auto">
+            <h1
+                class="text-center text-4xl sm:text-5xl font-[Sacramento] text-rose-600 mb-10"
+            >
+                🎀 My Little Journal
+            </h1>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <a
+                    href="journal.html"
+                    class="bg-rose-300 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+                >
+                    <h2 class="text-lg text-white font-medium">
+                        ✍️ Write Journal
+                    </h2>
+                    <p class="text-sm text-rose-50">A safe space.</p>
+                </a>
+                <a
+                    href="history.html"
+                    class="bg-rose-300 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+                >
+                    <h2 class="text-lg text-white font-medium">
+                        📔 Journal Entries
+                    </h2>
+                    <p class="text-sm text-rose-50">Read memories.</p>
+                </a>
+                <a
+                    href="calendar.html"
+                    class="bg-rose-300 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+                >
+                    <h2 class="text-lg text-white font-medium">🌸 Calendar</h2>
+                    <p class="text-sm text-rose-50">Your days.</p>
+                </a>
+                <a
+                    href="todo.html"
+                    class="bg-rose-300 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+                >
+                    <h2 class="text-lg text-white font-medium">
+                        🎀 To-Do List
+                    </h2>
+                    <p class="text-sm text-rose-50">Gentle tasks.</p>
+                </a>
+                <a
+                    href="gallery.html"
+                    class="bg-rose-300 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+                >
+                    <h2 class="text-lg text-white font-medium">🖼️ Gallery</h2>
+                    <p class="text-sm text-rose-50">Little memories.</p>
+                </a>
+            </div>
+        </div>
+
+        <audio
+            id="clickSound"
+            src="assets/sound/pop.mp3"
+            preload="auto"
+        ></audio>
+
+        <script>
+            const clickSound = document.getElementById("clickSound");
+
+            document.querySelectorAll("a").forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    const href = link.getAttribute("href");
+                    if (!href) return;
+
+                    e.preventDefault();
+
+                    // play sound
+                    clickSound.currentTime = 0;
+                    clickSound.play();
+
+                    // delay pindah halaman
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 250); // 0.25 detik
+                });
+            });
+        </script>
+
+        <script>
+            window.addEventListener("load", () =>
+                document.body.classList.remove("opacity-0", "translate-y-3")
+            );
+        </script>
+    </body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>To-Do</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Sacramento&family=Inter:wght@300;400;500&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body
+        class="font-[Inter] bg-rose-50 min-h-screen px-4 py-10 opacity-0 translate-y-3 transition-all duration-500"
+    >
+        <div class="max-w-md mx-auto">
+            <div class="flex justify-between mb-6">
+                <a href="index.html" class="text-rose-400">← back</a>
+                <h1
+                    class="text-3xl sm:text-4xl font-[Sacramento] text-rose-600"
+                >
+                    🎀 To-Do List
+                </h1>
+                <span></span>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6">
+                <div class="flex gap-2 mb-4">
+                    <input
+                        id="i"
+                        class="flex-1 rounded-xl border border-rose-200 px-4 py-2"
+                        placeholder="a gentle task…"
+                    />
+                    <button
+                        onclick="a()"
+                        class="bg-rose-300 text-white px-4 rounded-xl"
+                    >
+                        +
+                    </button>
+                </div>
+                <ul id="l" class="space-y-2"></ul>
+            </div>
+        </div>
+
+        <script>
+            let t = JSON.parse(localStorage.getItem("todos")) || [];
+            function a() {
+                if (!i.value) return;
+                t.push({ text: i.value, done: false });
+                i.value = "";
+                s();
+            }
+            function d(x) {
+                t.splice(x, 1);
+                s();
+            }
+            function g(x) {
+                t[x].done = !t[x].done;
+                s();
+            }
+            function s() {
+                localStorage.setItem("todos", JSON.stringify(t));
+                l.innerHTML = t.length
+                    ? ""
+                    : "<p class='text-center text-rose-400'>no tasks 🌸</p>";
+                t.forEach(
+                    (e, i) =>
+                        (l.innerHTML += `<li class="flex justify-between bg-rose-50 rounded-xl px-4 py-2">
+     <div class="flex gap-3">
+       <input type="checkbox" ${e.done ? "checked" : ""} onclick="g(${i})">
+       <span class="${
+           e.done ? "line-through text-slate-400" : "text-slate-600"
+       }">${e.text}</span>
+     </div>
+     <button onclick="d(${i})">🗑️</button>
+   </li>`)
+                );
+            }
+            s();
+            window.addEventListener("load", () =>
+                document.body.classList.remove("opacity-0", "translate-y-3")
+            );
+        </script>
+
+        <audio
+            id="clickSound"
+            src="assets/sound/pop.mp3"
+            preload="auto"
+        ></audio>
+
+        <script>
+            const clickSound = document.getElementById("clickSound");
+
+            document.querySelectorAll("a").forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    const href = link.getAttribute("href");
+                    if (!href) return;
+
+                    e.preventDefault();
+
+                    // play sound
+                    clickSound.currentTime = 0;
+                    clickSound.play();
+
+                    // delay pindah halaman
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 250); // 0.25 detik
+                });
+            });
+        </script>
+    </body>
+</html>
